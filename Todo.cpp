@@ -29,8 +29,42 @@ enum class Moves { NONE, UP, DOWN, LEFT, RIGHT };
 
 struct StonePlusPlus {
 	bool isChecked;
+	bool isLibertyCounted;
 	Stone stone;
 };
+
+int count_mark_nearby_liberty(StonePlusPlus boardpp[][19], int row, int col, bool liberties[][19]) {
+	int total = 0;
+	if (row - 1 >= 0) {
+		if (boardpp[row - 1][col].stone == Empty && !boardpp[row - 1][col].isLibertyCounted) {
+			boardpp[row - 1][col].isLibertyCounted = true;
+			liberties[row - 1][col] = 1;
+			++total;
+		}
+	}
+	if (col + 1 <= 18) {
+		if (boardpp[row][col + 1].stone == Empty && !boardpp[row][col + 1].isLibertyCounted) {
+			boardpp[row][col + 1].isLibertyCounted = true;
+			liberties[row][col + 1] = 1;
+			++total;
+		}
+	}
+	if (row + 1 <= 18) {
+		if (boardpp[row + 1][col].stone == Empty && !boardpp[row + 1][col].isLibertyCounted) {
+			boardpp[row + 1][col].isLibertyCounted = true;
+			liberties[row + 1][col] = 1;
+			++total;
+		}
+	}
+	if (col - 1 >= 0) {
+		if (boardpp[row][col - 1].stone == Empty && !boardpp[row][col - 1].isLibertyCounted) {
+			boardpp[row][col - 1].isLibertyCounted = true;
+			liberties[row][col - 1] = 1;
+			++total;
+		}
+	}
+	return total;
+}
 
 vector<Moves> check_move_valid(int row, int col) {
 	vector<Moves> moves_to_check;
@@ -53,29 +87,31 @@ vector<Moves> check_move_valid(int row, int col) {
 	return moves_to_check;
 }
 
-void recursive_connected_liberty(StonePlusPlus boardpp[][19], int row, int col, bool connected_part[][19], bool liberties[][19], Stone stone) {
+void recursive_connected_liberty(StonePlusPlus boardpp[][19], int row, int col, bool connected_part[][19], bool liberties[][19], Stone stone, int& liberty) {
 	// If itself is not of the same stone, then it is done
 	if (boardpp[row][col].stone != stone || boardpp[row][col].isChecked) {
 		return;
 	}
 	else {
 		// it is the stone to find and it is not checked
+		// count number of liberties
 		boardpp[row][col].isChecked = true;
 		connected_part[row][col] = true;
+		liberty += count_mark_nearby_liberty(boardpp, row, col, liberties);
 		vector<Moves> move_to_do = check_move_valid(row, col);
 		for (Moves move : move_to_do) {
 			switch (move) {
 			case Moves::UP:
-				recursive_connected_liberty(boardpp, row - 1, col, connected_part, liberties, stone);
+				recursive_connected_liberty(boardpp, row - 1, col, connected_part, liberties, stone, liberty);
 				break;
 			case Moves::DOWN:
-				recursive_connected_liberty(boardpp, row + 1, col, connected_part, liberties, stone);
+				recursive_connected_liberty(boardpp, row + 1, col, connected_part, liberties, stone, liberty);
 				break;
 			case Moves::LEFT:
-				recursive_connected_liberty(boardpp, row, col - 1, connected_part, liberties, stone);
+				recursive_connected_liberty(boardpp, row, col - 1, connected_part, liberties, stone, liberty);
 				break;
 			case Moves::RIGHT:
-				recursive_connected_liberty(boardpp, row, col + 1, connected_part, liberties, stone);
+				recursive_connected_liberty(boardpp, row, col + 1, connected_part, liberties, stone, liberty);
 				break;
 			case Moves::NONE:
 				break;
@@ -86,9 +122,9 @@ void recursive_connected_liberty(StonePlusPlus boardpp[][19], int row, int col, 
 	}
 }
 
-int helper_function(StonePlusPlus boardpp[][19], int row, int col, bool connected_part[][19], bool liberties[][19]) {
+int helper_function(StonePlusPlus boardpp[][19], int row, int col, bool connected_part[][19], bool liberties[][19], const Stone board[][19]) {
 	int total_liberty = 0;
-	recursive_connected_liberty(boardpp, row, col, connected_part, liberties, boardpp[row][col].stone);
+	recursive_connected_liberty(boardpp, row, col, connected_part, liberties, boardpp[row][col].stone, total_liberty);
 	return total_liberty;
 }
 
@@ -105,11 +141,12 @@ int check_liberties(const Stone board[][19], int row, int col, bool connected_pa
 			for (int j = 0; j < 19; ++j) {
 				boardpp[i][j].isChecked = false;
 				boardpp[i][j].stone = board[i][j];
+				boardpp[i][j].isLibertyCounted = false;
 			}
 		}
 	}
 	int total_liberty = 0;
-	total_liberty = helper_function(boardpp, row, col, connected_part, liberties);
+	total_liberty = helper_function(boardpp, row, col, connected_part, liberties, board);
 	return total_liberty;
 }
 
