@@ -24,7 +24,12 @@ using std::fill;
  ***********************************************************************/
 
 int check_liberties(const Stone board[][19], int row, int col, bool connected_part[][19], bool liberties[][19]) {
-	
+	if (row < 1 || row > 19 || col < 1 || col > 19) {
+		return -1;
+	}
+	else if (board[row][col] == 0) {
+		return -2;
+	}
 	return -1;
 }
 
