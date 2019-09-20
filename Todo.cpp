@@ -222,10 +222,10 @@ int edit(Stone board[][19], Stone player, int row, int col, int record[][2], int
 	vector<CapturedPair> to_remove_from_board;
 	for (int i = 0; i < 19; ++i) {
 		for (int j = 0; j < 19; ++j) {
-			if (captured[row][col] == 1) {
+			if (captured[i][j] == 1) {
 				CapturedPair a;
-				a.row = row;
-				a.col = col;
+				a.row = i;
+				a.col = j;
 				to_remove_from_board.push_back(a);
 			}
 		}
