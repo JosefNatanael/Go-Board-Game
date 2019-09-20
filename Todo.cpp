@@ -159,7 +159,22 @@ int check_liberties(const Stone board[][19], int row, int col, bool connected_pa
  ***********************************************************************/
 
 bool find_captured(const Stone board[][19], Stone player, bool captured[][19]) {
-	return false;
+	bool flag_return = false;
+	for (int i = 0; i < 19; ++i) {
+		for (int j = 0; j < 19; ++j) {
+			if (board[i][j] != player) {
+				continue;
+			}
+			bool connected_part[19][19], liberties[19][19];
+			fill(&connected_part[0][0], &connected_part[18][18], false);
+			fill(&liberties[0][0], &liberties[18][18], false);
+			if (check_liberties(board, i, j, connected_part, liberties) != 0) {
+				flag_return = true;
+				captured[i][j] = true;
+			}
+		}
+	}
+	return flag_return;
 }
 
 /***********************************************************************
