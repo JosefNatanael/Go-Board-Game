@@ -168,7 +168,7 @@ bool find_captured(const Stone board[][19], Stone player, bool captured[][19]) {
 			bool connected_part[19][19], liberties[19][19];
 			fill(&connected_part[0][0], &connected_part[18][18], false);
 			fill(&liberties[0][0], &liberties[18][18], false);
-			if (check_liberties(board, i, j, connected_part, liberties) != 0) {
+			if (check_liberties(board, i, j, connected_part, liberties) == 0) {
 				flag_return = true;
 				captured[i][j] = true;
 			}
