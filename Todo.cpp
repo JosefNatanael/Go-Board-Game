@@ -233,6 +233,10 @@ int edit(Stone board[][19], Stone player, int row, int col, int record[][2], int
 	for (CapturedPair i : to_remove_from_board) {
 		board[i.row][i.col] = Empty;
 	}
+	record[counter][0] = row;
+	record[counter][1] = col;
+	++counter;
+	++max_steps;
 	return 0;
 }
 
