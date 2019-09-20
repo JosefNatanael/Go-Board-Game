@@ -192,7 +192,48 @@ bool find_captured(const Stone board[][19], Stone player, bool captured[][19]) {
  ***********************************************************************/
 
 int edit(Stone board[][19], Stone player, int row, int col, int record[][2], int& counter, int& max_steps) {
-	return -1;
+	if (row < 0 || row > 18 || col < 0 || col > 18) {
+		return -1;
+	}
+	if (board[row][col] != Empty) {
+		return -2;
+	}
+	Stone copy_board[19][19];
+	for (int i = 0; i < 19; ++i) {
+		for (int j = 0; j < 19; ++j) {
+			copy_board[i][j] = board[i][j];
+		}
+	}
+	copy_board[row][col] = player;
+	bool connected_part[19][19], liberties[19][19];
+	fill(&connected_part[0][0], &connected_part[18][18], false);
+	fill(&liberties[0][0], &liberties[18][18], false);
+	if (check_liberties(copy_board, row, col, connected_part, liberties) == 0) {
+		return -3;
+	}
+	board[row][col] = player;
+	bool captured[19][19];
+	fill(&captured[0][0], &captured[18][18], false);
+	player == Black ? find_captured(board, White, captured) : find_captured(board, Black, captured);
+	struct CapturedPair {
+		int row;
+		int col;
+	};
+	vector<CapturedPair> to_remove_from_board;
+	for (int i = 0; i < 19; ++i) {
+		for (int j = 0; j < 19; ++j) {
+			if (captured[row][col] == 1) {
+				CapturedPair a;
+				a.row = row;
+				a.col = col;
+				to_remove_from_board.push_back(a);
+			}
+		}
+	}
+	for (CapturedPair i : to_remove_from_board) {
+		board[i.row][i.col] = Empty;
+	}
+	return 0;
 }
 
 /***********************************************************************
