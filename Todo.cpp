@@ -166,8 +166,8 @@ bool find_captured(const Stone board[][19], Stone player, bool captured[][19]) {
 				continue;
 			}
 			bool connected_part[19][19], liberties[19][19];
-			fill(&connected_part[0][0], &connected_part[18][18], false);
-			fill(&liberties[0][0], &liberties[18][18], false);
+			fill(&connected_part[0][0], &connected_part[18][18] + 1, false);
+			fill(&liberties[0][0], &liberties[18][18] + 1, false);
 			if (check_liberties(board, i, j, connected_part, liberties) == 0) {
 				flag_return = true;
 				captured[i][j] = true;
@@ -206,14 +206,14 @@ int edit(Stone board[][19], Stone player, int row, int col, int record[][2], int
 	}
 	copy_board[row][col] = player;
 	bool connected_part[19][19], liberties[19][19];
-	fill(&connected_part[0][0], &connected_part[18][18], false);
-	fill(&liberties[0][0], &liberties[18][18], false);
+	fill(&connected_part[0][0], &connected_part[18][18] + 1, false);
+	fill(&liberties[0][0], &liberties[18][18] + 1, false);
 	if (check_liberties(copy_board, row, col, connected_part, liberties) == 0) {
 		return -3;
 	}
 	board[row][col] = player;
 	bool captured[19][19];
-	fill(&captured[0][0], &captured[18][18], false);
+	fill(&captured[0][0], &captured[18][18] + 1, false);
 	player == Black ? find_captured(board, White, captured) : find_captured(board, Black, captured);
 	struct CapturedPair {
 		int row;
@@ -256,14 +256,14 @@ void edit_from_jump(Stone board[][19], Stone player, int row, int col) {
 	}
 	copy_board[row][col] = player;
 	bool connected_part[19][19], liberties[19][19];
-	fill(&connected_part[0][0], &connected_part[18][18], false);
-	fill(&liberties[0][0], &liberties[18][18], false);
+	fill(&connected_part[0][0], &connected_part[18][18] + 1, false);
+	fill(&liberties[0][0], &liberties[18][18] + 1, false);
 	if (check_liberties(copy_board, row, col, connected_part, liberties) == 0) {
 		return;
 	}
 	board[row][col] = player;
 	bool captured[19][19];
-	fill(&captured[0][0], &captured[18][18], false);
+	fill(&captured[0][0], &captured[18][18] + 1, false);
 	player == Black ? find_captured(board, White, captured) : find_captured(board, Black, captured);
 	struct CapturedPair {
 		int row;
