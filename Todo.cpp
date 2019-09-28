@@ -292,6 +292,9 @@ void jump_to(Stone board[][19], int target, int record[][2], int& counter, int& 
 	counter = 0;
 	for (int i = 0; i < target; ++i) {
 		current_player = i % 2 == 0 ? Black : White;
+		if (record[i][0] == -1 && record[i][1] == -1) {
+			continue;
+		}
 		edit_from_jump(copy_board, current_player, record[i][0], record[i][1]);
 	}
 	for (int i = 0; i < 19; ++i) {
