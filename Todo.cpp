@@ -141,7 +141,7 @@ int check_liberties(const Stone board[][19], int row, int col, bool connected_pa
 			for (int j = 0; j < 19; ++j) {
 				boardpp[i][j].isChecked = false;
 				boardpp[i][j].stone = board[i][j];
-				boardpp[i][j].isLibertyCounted = false;
+				boardpp[i][j].isLibertyCounted = false;	
 			}
 		}
 	}
@@ -191,6 +191,44 @@ bool find_captured(const Stone board[][19], Stone player, bool captured[][19]) {
  *   max_steps correctly.
  ***********************************************************************/
 
+bool isSuicide(const Stone board[][19], const Stone player, const int row, const int col) {
+	struct CapturedPair {
+		int row;
+		int col;
+	};
+	bool captured[19][19];
+	fill(&captured[0][0], &captured[18][18] + 1, false);
+	Stone copy_board[19][19];
+	for (int i = 0; i < 19; ++i) {
+		for (int j = 0; j < 19; ++j) {
+			copy_board[i][j] = board[i][j];
+		}
+	}
+	player == Black ? find_captured(copy_board, White, captured) : find_captured(copy_board, Black, captured);
+	int initial_number_of_captured = 0;
+	for (int i = 0; i < 19; ++i) {
+		for (int j = 0; j < 19; ++j) {
+			if (captured[i][j] == 1) {
+				++initial_number_of_captured;
+			}
+		}
+	}
+	copy_board[row][col] = player;
+	player == Black ? find_captured(copy_board, White, captured) : find_captured(copy_board, Black, captured);
+	int final_number_of_captured = 0;
+	for (int i = 0; i < 19; ++i) {
+		for (int j = 0; j < 19; ++j) {
+			if (captured[i][j] == 1) {
+				++final_number_of_captured;
+			}
+		}
+	}
+	if (final_number_of_captured != initial_number_of_captured) {
+		return false;
+	}
+	return true;
+}
+
 int edit(Stone board[][19], Stone player, int row, int col, int record[][2], int& counter, int& max_steps) {
 	if (row < 0 || row > 18 || col < 0 || col > 18) {
 		return -1;
@@ -209,7 +247,9 @@ int edit(Stone board[][19], Stone player, int row, int col, int record[][2], int
 	fill(&connected_part[0][0], &connected_part[18][18] + 1, false);
 	fill(&liberties[0][0], &liberties[18][18] + 1, false);
 	if (check_liberties(copy_board, row, col, connected_part, liberties) == 0) {
-		return -3;
+		if (isSuicide(board, player, row, col)) {
+			return -3;
+		}	
 	}
 	board[row][col] = player;
 	bool captured[19][19];
