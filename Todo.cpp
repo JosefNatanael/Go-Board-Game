@@ -299,7 +299,9 @@ void edit_from_jump(Stone board[][19], Stone player, int row, int col) {
 	fill(&connected_part[0][0], &connected_part[18][18] + 1, false);
 	fill(&liberties[0][0], &liberties[18][18] + 1, false);
 	if (check_liberties(copy_board, row, col, connected_part, liberties) == 0) {
-		return;
+		if (isSuicide(board, player, row, col)) {
+			return;
+		}
 	}
 	board[row][col] = player;
 	bool captured[19][19];
